@@ -1,6 +1,6 @@
 <template>
   <div class="grid grid-cols-3 gap-5 p-5">
-    <UCard v-for="item in paginatedItems" :key="item.id" class="w-[100%]" :ui="{
+    <UCard v-for="item in props.items" :key="item.id" class="w-[100%]" :ui="{
       header: {
         base: '',
         background: '',
@@ -20,43 +20,8 @@
       </div>
     </UCard>
   </div>
-  <div class="flex p-5 w-full items-center justify-end">
-    <UPagination v-model="currentPage" :page-count="numPages" :total="items.length" @change="handleChange" />
-  </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-const currentPage = ref(1);
-const itemsPerPage = 9;
-const items = ref([]);
-const paginatedItems = ref([])
-
-onMounted(() => {
-  try {
-    fetchData();
-    categoryItems()
-  } catch (error) {
-    console.error(error);
-  }
-})
-
-watch(currentPage, (newPage) => {
-  const startIndex = (newPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  paginatedItems.value = items.value.slice(startIndex, endIndex);
-})
-
-async function fetchData() {
-  const apiUrl = "https://api.escuelajs.co/api/v1/products";
-  const response = await fetch(apiUrl)
-  items.value = await response.json()
-  const startIndex = (currentPage.value - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  paginatedItems.value = items.value.slice(startIndex, endIndex);
-}
-function handleChange(page) {
-  currentPage.value = page;
-}
-
+<script setup>
+  const props = defineProps(['items'])
 </script>
