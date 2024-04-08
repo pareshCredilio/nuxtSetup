@@ -1,50 +1,38 @@
 <template>
-    <UForm @submit="submitForm">
-            <UFormGroup label="Username">
-            <UInput type="text" v-model="formData.username" ref="usernameInput" />
-             <div v-if="v$.$errors[0]?.$property=='username'" class=" text-red-600">
-                {{ v$.$errors[0].$message }}
-            </div>
+    <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+        <UFormGroup label="Email" name="email">
+            <UInput v-model="state.email" />
         </UFormGroup>
-        <UFormGroup label="Password">
-            <UInput v-model="formData.password" type="password" ref="passwordInput" />
-            <div class=" text-red-600" v-if="v$.$errors[0]?.$property=='password'">
-                {{ v$.$errors[0].$message }}
-            </div>
+
+        <UFormGroup label="Password" name="password">
+            <UInput v-model="state.password" type="password" />
         </UFormGroup>
-        <UButton type="submit">Submit</UButton>
+
+        <UButton type="submit">
+            Submit
+        </UButton>
     </UForm>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue';
-import useValidate from '@vuelidate/core';
-import { required, minLength  } from '@vuelidate/validators';
+import { object, string, type InferType } from 'yup'
+import type { FormSubmitEvent } from '#ui/types'
 
-const formData = reactive({
-    username: '',
-    password: '',
-});
+const schema = object({
+    email: string().email('Invalid email').required('Required'),
+    password: string()
+        .min(8, 'Must be at least 8 characters')
+        .required('Required')
+})
 
-const rules = {
-    username: { required },
-    password: { required, minLength: minLength(6) },
-};
-const v$ = useValidate(rules, formData);
-const passwordInput = ref<HTMLInputElement | null>(null);
-const usernameInput = ref<HTMLInputElement | null>(null);
+type Schema = InferType<typeof schema>
 
-const submitForm = async (e: Event) => {
-    const result = await v$.value.$validate();
-    if (!result) {
-        const firstInvalidField = v$.value.$errors[0].$property;
-        if (firstInvalidField !== "username") {
-            passwordInput.value.$refs.input.focus();
-        } else {
-            usernameInput.value.$refs.input.focus();
-        }
-    } else {
-        alert('success');
-    }
-};
+const state = reactive({
+    email: undefined,
+    password: undefined
+})
+
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+    console.log(event.data)
+}
 </script>
