@@ -49,7 +49,7 @@ onMounted(async () => {
     }
 });
 function handleUpdate() {
-    router.push({ path: `/products/update-product/${productId}` })
+    router.push({ path: `/products/update/${productId}` })
 }
 async function handleDelete() {
     try {
