@@ -1,6 +1,6 @@
 <template>
   <div>
-    <UCard class="w-[100%]" @click="handleCardClick(items.id)">
+    <UCard class="w-[100%] max-h-[400px]" @click="handleCardClick(items.id)">
       <template #header>
         <div class="p-[-10px]">
           <img :src="items.images[0]" alt="" class="w-[100%] h-[300px] object-cover rounded-t-lg" />
