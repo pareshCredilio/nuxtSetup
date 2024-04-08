@@ -1,33 +1,33 @@
 <template>
-    <UForm v-if="product" class="space-y-4" @submit="onSubmit">
+    <UForm :state="state" v-if="product" class="space-y-4" @submit="onSubmit">
         <UFormGroup label="Title" name="title">
-            <UInput v-model="product.title" />
+            <UInput v-model="state.title" />
         </UFormGroup>
 
         <UFormGroup label="Price" name="price">
-            <UInput v-model.number="product.price" />
+            <UInput v-model.number="state.price" />
         </UFormGroup>
 
         <UFormGroup label="Description" name="description">
-            <UInput v-model="product.description" />
+            <UTextarea v-model="state.description" />
         </UFormGroup>
         <UFormGroup label="category" name="category">
-            <UInput v-model="product.category.name" />
+            <UInput v-model="state.category.name" />
         </UFormGroup>
         <UButton type="submit">
             Submit
         </UButton>
     </UForm>
 </template>
-  
+
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 
 interface Product {
     id: number;
     title: string;
-    price: number;
+    price: string;
     description: string;
     images: string[];
     createdAt: string;
@@ -41,16 +41,31 @@ interface Product {
     };
 }
 
+
+
 const router = useRouter();
 const productId = router.currentRoute.value.params.id;
 const product = ref<Product | null>(null);
 
+const state = reactive({
+    title: '',
+    price: '',
+    description: '',
+    category: {
+        name: ''
+    }
+})
 onMounted(async () => {
     try {
         const response = await fetch(`https://api.escuelajs.co/api/v1/products/${productId}`);
         if (response.ok) {
             product.value = await response.json();
-            console.log(product.value);
+            if (product.value) {
+                state.title = product.value.title;
+                state.price = product.value.price;
+                state.description = product.value.description;
+                state.category.name = product.value.category.name;
+            }
         } else {
             console.error(`Failed to fetch product with id ${productId}`);
         }
@@ -89,9 +104,9 @@ async function onSubmit() {
             return;
         }
         const updateData = {
-            title: product.value.title,
-            price: product.value.price,
-            description: product.value.description,
+            title: state.title,
+            price: state.price,
+            description: state.description,
         };
         const response = await fetch(`https://api.escuelajs.co/api/v1/products/${productId}`, {
             method: 'PUT',

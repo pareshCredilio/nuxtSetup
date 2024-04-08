@@ -44,7 +44,7 @@ const categories = ref<Object>()
 const selectedId = ref<number | null>(null);
 const selectedName = ref<string | null>('All Products');
 const filteredItems = ref<Item[]>([]);
-const isLoading = ref<boolean>(false);
+const isLoading = ref<boolean>(true);
 
 onMounted(() => {
   fetchData();
@@ -70,7 +70,6 @@ async function fetchCategories() {
 }
 
 async function fetchData(page: number = 1) {
-  isLoading.value = true;
   const apiUrl = `https://api.escuelajs.co/api/v1/products`;
   try {
     const response = await fetch(apiUrl)
@@ -85,8 +84,7 @@ async function fetchData(page: number = 1) {
   }
 }
 
-async function fetchPaginatedData(page) {
-  isLoading.value = true;
+async function fetchPaginatedData(page: number) {
   const offset = (page - 1) * ITEMS_PER_PAGE;
   const apiUrl = `https://api.escuelajs.co/api/v1/products?offset=${offset}&limit=${ITEMS_PER_PAGE}`;
   const response = await fetch(apiUrl)
