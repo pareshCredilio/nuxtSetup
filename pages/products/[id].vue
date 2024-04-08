@@ -49,7 +49,7 @@ onMounted(async () => {
     }
 });
 function handleUpdate() {
-    router.push({ path: `/updateProduct/${productId}` })
+    router.push({ path: `/products/update-product/${productId}` })
 }
 async function handleDelete() {
     try {
@@ -58,7 +58,7 @@ async function handleDelete() {
         });
         if (response.ok) {
             console.log('Product deleted successfully');
-            router.push('/')
+            router.push('/products')
         } else {
             console.error('Failed to delete product:', response.statusText);
         }
