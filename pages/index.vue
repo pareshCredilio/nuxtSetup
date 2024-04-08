@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-5">
     <div class="w-[300px] flex flex-row gap-3 items-center">
       <div>Category</div>
-      <USelectMenu v-model="selectedName" :options="category" @change="handleCategorySelect" />
+      <USelectMenu class="w-[150px]" v-model="selectedName" :options="category" @change="handleCategorySelect" />
     </div>
     <div>
       <div class="grid grid-cols-3 gap-5 " v-if="!isLoading">
@@ -19,7 +19,8 @@
       NO products to show
     </div>
     <div class="flex pb-2 w-full items-center justify-end">
-      <UPagination v-model="currentPage" :page-count="ITEMS_PER_PAGE" :total="totalProducts" @click="handleChange" />
+      <UPagination v-if="!filtered" v-model="currentPage" :page-count="ITEMS_PER_PAGE" :total="totalProducts" @click="handleChange" />
+      <UPagination v-if="filtered" v-model="currentPage" :page-count="ITEMS_PER_PAGE" :total="filteredItems.length" @click="handleChange" />
     </div>
   </div>
 </template>
@@ -44,6 +45,7 @@ const categories = ref<Object>()
 const selectedId = ref<number | null>(null);
 const selectedName = ref<string | null>('All Products');
 const filteredItems = ref<Item[]>([]);
+const filtered = ref<Boolean>(false)
 const isLoading = ref<boolean>(true);
 
 onMounted(() => {
@@ -100,6 +102,7 @@ async function handleCategorySelect(selectedCategoryName: string): Promise<void>
   selectedName.value = selectedCategoryName;
   if (selectedCategoryName === 'All Products') {
     selectedId.value = null;
+    filtered.value=false;
     return fetchData(currentPage.value);
   }
   const selectedCategory = categories.value.find(item => item.name === selectedCategoryName);
@@ -112,6 +115,8 @@ async function handleCategorySelect(selectedCategoryName: string): Promise<void>
       paginatedItems.value = filteredItems.value.slice(0, ITEMS_PER_PAGE);
     } catch (error) {
       console.error('Error fetching filtered products:', error);
+    }finally{
+      filtered.value=true;
     }
   }
 }
