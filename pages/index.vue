@@ -1,15 +1,15 @@
 <template>
   <div class="flex flex-col gap-5">
-    <div class="w-[300px] flex flex-row gap-3 items-center">
-      <div>Category</div>
+    <div class="flex items-center">
+      <h2 class="mr-3">Category</h2>
       <USelectMenu class="w-[150px]" v-model="selectedName" :options="category" @change="handleCategorySelect" />
     </div>
     <div>
       <div class="grid grid-cols-3 gap-5 " v-if="!isLoading">
-        <Card v-for="item in paginatedItems" class="hover:cursor-pointer" :items="item" />
+        <Card v-for="(item,index) in paginatedItems" class="hover:cursor-pointer" :key="index" :items="item" />
       </div>
       <div v-else class="grid grid-cols-3 gap-5">
-        <UCard v-for="index in ITEMS_PER_PAGE" class="h-[400px] w-[100%]">
+        <UCard v-for="index in ITEMS_PER_PAGE" :key="index" class="h-[400px] w-[100%]">
           <USkeleton class="w-full h-[300px] bg-gray-200 mt-2 rounded" />
           <USkeleton class="w-full h-6 bg-gray-200 mt-2 rounded" />
         </UCard>
@@ -20,20 +20,13 @@
     </div>
     <div class="flex pb-2 w-full items-center justify-end">
       <UPagination v-if="!filtered" v-model="currentPage" :page-count="ITEMS_PER_PAGE" :total="totalProducts" @click="handleChange" />
-      <UPagination v-if="filtered" v-model="currentPage" :page-count="ITEMS_PER_PAGE" :total="filteredItems.length" @click="handleChange" />
+      <UPagination v-if="filtered" v-model="currentPage" :page-count="ITEMS_PER_PAGE" :total="filteredItems.length" @click="handleFilterChange" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-interface Item {
-  id: number;
-  name: string;
-  category: {
-    id: number;
-    name: string;
-  }
-}
+import type { Item } from '../types/index'
 
 const currentPage = ref<number>(1);
 const ITEMS_PER_PAGE = 6;
@@ -41,7 +34,7 @@ const items = ref<Item[]>([]);
 const paginatedItems = ref<Item[]>([]);
 const totalProducts = ref<Number>(0)
 const category = ref<string[]>([]);
-const categories = ref<Object>()
+const categories = ref<Record<string,unknown >>({})
 const selectedId = ref<number | null>(null);
 const selectedName = ref<string | null>('All Products');
 const filteredItems = ref<Item[]>([]);
@@ -93,19 +86,28 @@ async function fetchPaginatedData(page: number) {
   paginatedItems.value = await response.json()
   isLoading.value = false;
 }
-
+async function fetchFilterPaginatedData(page: number) {
+  console.log(page,"asd");
+  const offset = (page - 1) * ITEMS_PER_PAGE;
+  const apiUrl = `https://api.escuelajs.co/api/v1/products/?categoryId=${selectedId.value}&offset=${offset}&limit=${ITEMS_PER_PAGE}`
+  const response = await fetch(apiUrl)
+  paginatedItems.value=await response.json()
+  isLoading.value = false;
+}
 function handleChange() {
   fetchPaginatedData(currentPage.value);
 }
-
-async function handleCategorySelect(selectedCategoryName: string): Promise<void> {
+function handleFilterChange(){
+  fetchFilterPaginatedData(currentPage.value)
+}
+async function handleCategorySelect(selectedCategoryName: string, page:number): Promise<void> {
   selectedName.value = selectedCategoryName;
   if (selectedCategoryName === 'All Products') {
     selectedId.value = null;
     filtered.value=false;
     return fetchData(currentPage.value);
   }
-  const selectedCategory = categories.value.find(item => item.name === selectedCategoryName);
+  const selectedCategory = (categories.value as Array<Item>).find(item => item.name === selectedCategoryName);
   if (selectedCategory) {
     selectedId.value = selectedCategory.id;
     try {
@@ -120,5 +122,4 @@ async function handleCategorySelect(selectedCategoryName: string): Promise<void>
     }
   }
 }
-const totalPages = computed(() => Math.ceil(filteredItems.value.length / ITEMS_PER_PAGE));
-</script>
+</script>../types

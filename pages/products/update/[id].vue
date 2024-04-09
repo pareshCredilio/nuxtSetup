@@ -21,28 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue';
-import { useRouter } from 'vue-router';
-
-interface Product {
-    id: number;
-    title: string;
-    price: string;
-    description: string;
-    images: string[];
-    createdAt: string;
-    updatedAt?: string;
-    category: {
-        id: number;
-        name: string;
-        image: string;
-        createdAt: string;
-        updatedAt: string;
-    };
-}
-
-
-
+import type { Product } from "../../../types/index"
 const router = useRouter();
 const productId = router.currentRoute.value.params.id;
 const product = ref<Product | null>(null);

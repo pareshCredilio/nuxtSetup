@@ -1,9 +1,9 @@
 <template>
   <NuxtLink :to="`/products/${items.id}`">
-    <UCard class="w-[100%] max-h-[400px] overflow-hidden" @click="handleCardClick(items.id)">
+    <UCard class="w-[full] max-h-[400px] overflow-hidden">
       <template #header>
         <div>
-          <img :src="items.images[0]" alt="" class="w-[100%] h-[300px] object-cover rounded-t-lg" />
+          <img :src="items.images?.[0]" alt="" class="w-[100%] h-[300px] object-cover rounded-t-lg" />
         </div>
       </template>
       <div class="flex justify-around" >
@@ -16,7 +16,13 @@
   </NuxtLink>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { Item } from '../types/index'
 import { defineProps } from 'vue';
-const props = defineProps(['items']);
-</script>
+
+interface Props {
+  items: Item[];
+}
+const props = defineProps<Props>();
+
+</script>../types

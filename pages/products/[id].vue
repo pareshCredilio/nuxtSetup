@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col gap-5 p-5" v-if="product">
         <h1 class="text-2xl">Product Details</h1>
-        <pre>Category: {{ product.category.name }}</pre>
+        <pre>Category: {{ product?.category.name }}</pre>
         <div class="flex gap-5">
             <UButton icon="i-heroicons-pencil-square" size="sm" color="primary" variant="solid" label="Update"
                 :trailing="false" @click="handleUpdate" />
@@ -19,7 +19,7 @@
                     <p v-else>No images available.</p>
                 </div>
                 <div class="flex flex-col items-start gap-2">
-                    <h2 class="text-2xl flex w-screen justify-center">{{ product.title }}</h2>
+                    <h2 class="text-2xl flex w-full justify-center">{{ product.title }}</h2>
                     <div class="w-[400px] gap-2">
                         <pre class="text-xl">Price: ${{ product.price }}</pre>
                     </div>
