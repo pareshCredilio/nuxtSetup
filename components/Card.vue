@@ -1,9 +1,9 @@
 <template>
   <NuxtLink :to="`/products/${items.id}`">
-    <UCard class="w-[full] max-h-[400px] overflow-hidden">
+    <UCard class="w-full max-h-[400px] overflow-hidden">
       <template #header>
         <div>
-          <img :src="items.images?.[0]" alt="" class="w-[100%] h-[300px] object-cover rounded-t-lg" />
+          <img :src="items.images?.[0]" alt="" class="w-full h-[300px] object-cover rounded-t-lg" />
         </div>
       </template>
       <div class="flex justify-around" >
